@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biochemistry 201: Advanced Biochemistry Quiz</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+            --protein-color: #3498db;
+            --carb-color: #2ecc71;
+            --nucleic-color: #9b59b6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(26, 37, 47, 0.9)), 
+                        url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') center/cover fixed;
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quiz-info {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-item {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .info-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .quiz-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .questions-section {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .answer-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            display: none;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .answer-section.visible {
+            display: block;
+        }
+        
+        .question {
+            margin-bottom: 35px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 5px;
+        }
+        
+        .question-number::before {
+            content: "Q";
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .question-text {
+            margin-bottom: 25px;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            background: linear-gradient(to right, var(--light), #ecf0f1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .protein-note {
+            background: linear-gradient(to right, #d4e6f1, #a9cce3);
+            border-left: 5px solid var(--protein-color);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .carb-note {
+            background: linear-gradient(to right, #d5f5e3, #a9dfbf);
+            border-left: 5px solid var(--carb-color);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nucleic-note {
+            background: linear-gradient(to right, #ebdef0, #d7bde2);
+            border-left: 5px solid var(--nucleic-color);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option {
+            padding: 18px 25px;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.08rem;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: attr(data-letter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: #edf2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--dark);
+            border-right: 2px solid #cbd5e0;
+        }
+        
+        .option-content {
+            margin-left: 45px;
+        }
+        
+        .option:hover {
+            background-color: #ecf0f1;
+            border-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.selected {
+            background-color: #bdc3c7;
+            border-color: var(--secondary);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+        }
+        
+        .option.correct {
+            background-color: #f0fff4;
+            border-color: var(--success);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
+        }
+        
+        .option.incorrect {
+            background-color: #fff5f5;
+            border-color: var(--danger);
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.15);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.15rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            flex: 2;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #ffffff, #ecf0f1);
+            color: var(--dark);
+            flex: 1;
+            border: 2px solid #cbd5e0;
+        }
+        
+        .reset-btn:hover {
+            background: white;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .results-section {
+            margin-top: 50px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            display: none;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .score-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            gap: 25px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            flex: 1;
+            transition: transform 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .passed .stat-value {
+            color: var(--success);
+        }
+        
+        .failed .stat-value {
+            color: var(--danger);
+        }
+        
+        .attempted .stat-value {
+            color: var(--secondary);
+        }
+        
+        .answer-bank {
+            margin-top: 50px;
+        }
+        
+        .answer-item {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .answer-correct {
+            color: var(--success);
+            font-weight: bold;
+            display: inline-block;
+            padding: 5px 10px;
+            background: #f0fff4;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        
+        .answer-incorrect {
+            color: var(--danger);
+            font-weight: bold;
+            display: inline-block;
+            padding: 5px 10px;
+            background: #fff5f5;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin: 25px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            transition: width 0.5s;
+        }
+        
+        .topic-diagram {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+        
+        .topic-item {
+            text-align: center;
+            padding: 10px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .topic-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #ccc;
+        }
+        
+        .protein-circle { background: #3498db; }
+        .carb-circle { background: #2ecc71; }
+        .nucleic-circle { background: #9b59b6; }
+        
+        @media (max-width: 1200px) {
+            .quiz-container {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .topic-diagram {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .score-value {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .score-value {
+                font-size: 2.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+                padding: 15px;
+            }
+            
+            .option {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="icon">🧬</div>
+            <h1>Biochemistry 201: Advanced Biochemistry Quiz</h1>
+            <p class="subtitle">100 Questions Covering Protein Isolation, Protein Structure, Carbohydrates, and Nucleic Acid Chemistry</p>
+            <div class="difficulty-badge">ADVANCED BIOCHEMISTRY</div>
+        </header>
+        
+        <div class="quiz-info">
+            <div class="info-item">
+                <div class="info-value">100</div>
+                <div class="info-label">Questions</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">Protein</div>
+                <div class="info-label">Isolation & Structure</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">Carbohydrates</div>
+                <div class="info-label">Chemistry & Metabolism</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">Nucleic Acids</div>
+                <div class="info-label">Acid/Alkali Effects</div>
+            </div>
+        </div>
+        
+        <div class="topic-diagram">
+            <div class="topic-item">
+                <div class="topic-circle protein-circle">Protein</div>
+                <small>Isolation & Structure</small>
+            </div>
+            <div class="topic-item">
+                <div class="topic-circle carb-circle">Carb</div>
+                <small>Carbohydrates</small>
+            </div>
+            <div class="topic-item">
+                <div class="topic-circle nucleic-circle">Nucleic</div>
+                <small>Acid/Alkali</small>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar" style="width: 0%"></div>
+        </div>
+        
+        <div class="quiz-container">
+            <div class="questions-section" id="questions-section">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <div class="answer-section" id="answer-section">
+                <h2>Comprehensive Answer Bank</h2>
+                <p>Detailed explanations for all questions</p>
+                <div id="answer-bank">
+                    <!-- Answers will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="reset-btn" id="reset-btn">Reset Quiz</button>
+            <button class="submit-btn" id="submit-btn">Submit Answers</button>
+        </div>
+        
+        <div class="results-section" id="results-section">
+            <div class="score-display">
+                <h2>Your Biochemistry 201 Score</h2>
+                <div class="score-value" id="score-value">0/100</div>
+                <p>Comprehensive Coverage of Advanced Topics</p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box attempted">
+                    <div class="stat-value" id="attempted-value">0</div>
+                    <div class="stat-label">Questions Attempted</div>
+                </div>
+                <div class="stat-box passed">
+                    <div class="stat-value" id="passed-value">0</div>
+                    <div class="stat-label">Questions Passed</div>
+                </div>
+                <div class="stat-box failed">
+                    <div class="stat-value" id="failed-value">0</div>
+                    <div class="stat-label">Questions Failed</div>
+                </div>
+            </div>
+            
+            <div class="answer-bank">
+                <h3>Detailed Explanations</h3>
+                <div id="detailed-answers">
+                    <!-- Detailed answers will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 100 Comprehensive questions covering:
+        // - Protein isolation & purification (25)
+        // - Protein structure (primary, secondary, tertiary, quaternary) (25)
+        // - Carbohydrates (30)
+        // - Effects of acid and alkali on nucleic acids (20)
+        const quizData = [
+            // Protein Isolation & Purification (1-25)
+            {
+                question: "Which technique separates proteins based on their size by passing them through a porous matrix?",
+                options: ["Gel filtration chromatography", "Ion exchange chromatography", "Affinity chromatography", "SDS-PAGE"],
+                correct: 0,
+                explanation: "Gel filtration (size exclusion) separates proteins by molecular size; larger proteins elute first."
+            },
+            {
+                question: "The first step in protein isolation from cells is usually:",
+                options: ["Cell lysis", "Centrifugation", "Precipitation", "Dialysis"],
+                correct: 0,
+                explanation: "Cells must be broken open (lysis) to release proteins. Methods include sonication, homogenization, or detergent lysis."
+            },
+            {
+                question: "Which centrifugation method separates organelles based on their sedimentation rate?",
+                options: ["Differential centrifugation", "Density gradient centrifugation", "Ultracentrifugation", "Preparative centrifugation"],
+                correct: 0,
+                explanation: "Differential centrifugation separates components by sequential spins at increasing speeds, pelleting larger structures first."
+            },
+            {
+                question: "Ammonium sulfate precipitation is used to:",
+                options: ["Salting out proteins by reducing solubility", "Denature proteins", "Change protein charge", "Hydrolyze proteins"],
+                correct: 0,
+                explanation: "High salt concentrations (ammonium sulfate) compete for water, causing proteins to precipitate at different concentrations."
+            },
+            {
+                question: "Dialysis is used to:",
+                options: ["Remove small molecules like salts", "Concentrate protein solutions", "Separate proteins by charge", "Lyophilize samples"],
+                correct: 0,
+                explanation: "Dialysis uses a semipermeable membrane to allow diffusion of small solutes, leaving larger proteins inside."
+            },
+            {
+                question: "In ion exchange chromatography, proteins are eluted by:",
+                options: ["Increasing salt concentration", "Changing pH", "Both A and B", "Adding a competitive ligand"],
+                correct: 2,
+                explanation: "Ion exchange elution is achieved by increasing ionic strength or changing pH to disrupt protein-resin interactions."
+            },
+            {
+                question: "Which chromatographic method relies on specific biological interactions?",
+                options: ["Affinity chromatography", "Ion exchange", "Gel filtration", "Hydrophobic interaction"],
+                correct: 0,
+                explanation: "Affinity chromatography uses specific binding (e.g., antibody-antigen, enzyme-substrate) to purify proteins."
+            },
+            {
+                question: "SDS-PAGE separates proteins primarily based on:",
+                options: ["Molecular weight", "Charge", "Shape", "Hydrophobicity"],
+                correct: 0,
+                explanation: "SDS denatures proteins and gives them a uniform negative charge, so separation is by size (molecular weight)."
+            },
+            {
+                question: "In isoelectric focusing, proteins are separated based on:",
+                options: ["Isoelectric point (pI)", "Molecular weight", "Charge density", "Solubility"],
+                correct: 0,
+                explanation: "IEF separates proteins in a pH gradient; they migrate until they reach their pI (net zero charge)."
+            },
+            {
+                question: "The Bradford protein assay uses which dye?",
+                options: ["Coomassie Brilliant Blue G-250", "Silver nitrate", "Amido black", "Ponceau S"],
+                correct: 0,
+                explanation: "Bradford assay uses Coomassie dye, which shifts absorbance when bound to protein (measured at 595 nm)."
+            },
+            {
+                question: "In gel filtration chromatography, smaller proteins:",
+                options: ["Elute first", "Elute last", "Do not elute", "Bind to the matrix"],
+                correct: 1,
+                explanation: "Smaller proteins enter pores and are delayed, so they elute after larger proteins that are excluded."
+            },
+            {
+                question: "The principle of hydrophobic interaction chromatography is based on:",
+                options: ["Protein size", "Hydrophobic regions on protein surface", "Protein charge", "Specific binding"],
+                correct: 1,
+                explanation: "HIC separates proteins by their hydrophobicity; proteins bind to hydrophobic ligands in high salt and are eluted by decreasing salt."
+            },
+            {
+                question: "Which method is best for concentrating a dilute protein solution?",
+                options: ["Dialysis", "Ultrafiltration", "Gel filtration", "Ion exchange"],
+                correct: 1,
+                explanation: "Ultrafiltration uses pressure to force solvent through a membrane, retaining and concentrating proteins."
+            },
+            {
+                question: "In a typical protein purification protocol, the first step after lysis is often:",
+                options: ["Ammonium sulfate precipitation", "Centrifugation to remove debris", "Dialysis", "Chromatography"],
+                correct: 1,
+                explanation: "Centrifugation pellets cell debris, nuclei, and mitochondria, leaving a crude lysate (supernatant) for further purification."
+            },
+            {
+                question: "Two-dimensional electrophoresis combines:",
+                options: ["IEF and SDS-PAGE", "Native PAGE and SDS-PAGE", "Gel filtration and IEF", "Western blot and IEF"],
+                correct: 0,
+                explanation: "2D electrophoresis first separates by pI (IEF), then by molecular weight (SDS-PAGE)."
+            },
+            {
+                question: "The Lowry protein assay is based on:",
+                options: ["Biuret reaction and Folin-Ciocalteu reagent", "Coomassie dye binding", "BCA reaction", "UV absorbance at 280 nm"],
+                correct: 0,
+                explanation: "Lowry assay involves copper chelation (biuret) and reduction of Folin reagent by aromatic amino acids."
+            },
+            {
+                question: "Which protease is commonly used to digest proteins for peptide mapping?",
+                options: ["Trypsin", "Pepsin", "Chymotrypsin", "All of the above"],
+                correct: 3,
+                explanation: "Trypsin, pepsin, chymotrypsin, and others are used for protein digestion in proteomics."
+            },
+            {
+                question: "The ubiquitin-proteasome pathway is responsible for:",
+                options: ["Degradation of misfolded or short-lived proteins", "Protein folding", "Protein secretion", "Protein synthesis"],
+                correct: 0,
+                explanation: "Ubiquitin tags proteins for degradation by the proteasome, a major intracellular proteolytic system."
+            },
+            {
+                question: "In size exclusion chromatography, the void volume (V0) is:",
+                options: ["Volume at which very large molecules elute", "Volume at which small molecules elute", "Total column volume", "Volume of the stationary phase"],
+                correct: 0,
+                explanation: "Void volume is the volume of mobile phase that flows through the column without entering the pores; it's where large, excluded proteins elute."
+            },
+            {
+                question: "Which of the following is a strong cation exchanger?",
+                options: ["DEAE-cellulose", "CM-cellulose", "SP-Sepharose", "Q-Sepharose"],
+                correct: 2,
+                explanation: "SP (sulfopropyl) and CM (carboxymethyl) are cation exchangers; SP is strong because it remains charged over a wide pH range."
+            },
+            {
+                question: "In affinity chromatography, the target protein is eluted by:",
+                options: ["High salt", "Low pH", "Competitive ligand", "All of the above"],
+                correct: 3,
+                explanation: "Elution in affinity chromatography can be achieved by changing pH, ionic strength, or adding a competitive ligand."
+            },
+            {
+                question: "Which stain is most sensitive for detecting proteins in polyacrylamide gels?",
+                options: ["Coomassie Brilliant Blue", "Silver stain", "Ponceau S", "Amido black"],
+                correct: 1,
+                explanation: "Silver staining is 10-100 times more sensitive than Coomassie, detecting nanogram levels."
+            },
+            {
+                question: "The purpose of adding β-mercaptoethanol or DTT in SDS-PAGE sample buffer is to:",
+                options: ["Reduce disulfide bonds", "Prevent aggregation", "Denature proteins", "All of the above"],
+                correct: 3,
+                explanation: "Reducing agents break disulfide bonds, fully denature proteins, and ensure separation by size only."
+            },
+            {
+                question: "In native PAGE, proteins are separated based on:",
+                options: ["Size and charge", "Size only", "Charge only", "Hydrophobicity"],
+                correct: 0,
+                explanation: "Native PAGE separates proteins according to their native charge-to-mass ratio and shape."
+            },
+            {
+                question: "The BCA protein assay relies on:",
+                options: ["Biuret reaction and bicinchoninic acid", "Coomassie dye", "Bradford reagent", "UV absorbance"],
+                correct: 0,
+                explanation: "BCA assay uses copper reduction (biuret) followed by BCA chelation producing a purple color."
+            },
+            // Protein Structure (26-50)
+            {
+                question: "The primary structure of a protein refers to:",
+                options: ["Linear sequence of amino acids", "Local folding into α-helices and β-sheets", "Three-dimensional folding of a single polypeptide", "Arrangement of multiple subunits"],
+                correct: 0,
+                explanation: "Primary structure is the amino acid sequence, held together by peptide bonds."
+            },
+            {
+                question: "Which type of bond stabilizes the secondary structure of proteins?",
+                options: ["Hydrogen bonds", "Disulfide bonds", "Ionic bonds", "Hydrophobic interactions"],
+                correct: 0,
+                explanation: "Secondary structures (α-helices, β-sheets) are stabilized by hydrogen bonds between backbone carbonyl and amide groups."
+            },
+            {
+                question: "The α-helix is a common example of:",
+                options: ["Secondary structure", "Tertiary structure", "Quaternary structure", "Primary structure"],
+                correct: 0,
+                explanation: "α-helix and β-sheet are secondary structure elements."
+            },
+            {
+                question: "Which amino acid is often found in β-turns and has a cyclic structure that disrupts helices?",
+                options: ["Proline", "Glycine", "Alanine", "Valine"],
+                correct: 0,
+                explanation: "Proline's rigid ring causes kinks in polypeptide chains, often found in turns."
+            },
+            {
+                question: "The tertiary structure of a protein is primarily stabilized by:",
+                options: ["Hydrophobic interactions, hydrogen bonds, ionic bonds, and disulfide bridges", "Peptide bonds", "Hydrogen bonds between backbone atoms", "Interactions between subunits"],
+                correct: 0,
+                explanation: "Tertiary structure involves side chain interactions: hydrophobic, ionic, hydrogen bonds, and disulfide bonds."
+            },
+            {
+                question: "Which level of protein structure involves the arrangement of multiple polypeptide chains?",
+                options: ["Quaternary", "Tertiary", "Secondary", "Primary"],
+                correct: 0,
+                explanation: "Quaternary structure refers to the assembly of multiple subunits (e.g., hemoglobin)."
+            },
+            {
+                question: "Hemoglobin is an example of a protein with:",
+                options: ["Quaternary structure", "Only primary structure", "Only secondary structure", "Only tertiary structure"],
+                correct: 0,
+                explanation: "Hemoglobin has four polypeptide chains (two α, two β), making it a quaternary structure protein."
+            },
+            {
+                question: "Which bond is unique to tertiary and quaternary structure and involves covalent linkage between cysteine residues?",
+                options: ["Disulfide bond", "Hydrogen bond", "Ionic bond", "Peptide bond"],
+                correct: 0,
+                explanation: "Disulfide bonds (-S-S-) form between cysteine thiol groups and stabilize tertiary/quaternary structure."
+            },
+            {
+                question: "The protein structure level that is lost during denaturation is:",
+                options: ["Secondary, tertiary, and quaternary", "Primary only", "Secondary only", "None"],
+                correct: 0,
+                explanation: "Denaturation disrupts non-covalent interactions, destroying secondary, tertiary, and quaternary structure but not primary."
+            },
+            {
+                question: "Which of the following is a characteristic of β-pleated sheets?",
+                options: ["Hydrogen bonding between adjacent polypeptide strands", "Right-handed coil", "Stabilized by disulfide bonds", "Occurs only in globular proteins"],
+                correct: 0,
+                explanation: "β-sheets are formed by hydrogen bonds between backbone atoms of adjacent strands, which can be parallel or antiparallel."
+            },
+            {
+                question: "The Ramachandran plot is used to visualize:",
+                options: ["Allowed conformations of φ and ψ angles in polypeptides", "Amino acid sequences", "Hydrophobicity profiles", "Protein-protein interactions"],
+                correct: 0,
+                explanation: "Ramachandran plots show sterically allowed regions for backbone dihedral angles (φ, ψ) in proteins."
+            },
+            {
+                question: "Which amino acid has no chiral center and often introduces flexibility in protein structure?",
+                options: ["Glycine", "Alanine", "Proline", "Serine"],
+                correct: 0,
+                explanation: "Glycine's small side chain (H) allows unique conformations and is common in turns."
+            },
+            {
+                question: "The motif where an α-helix connects two parallel β-strands is called:",
+                options: ["βαβ motif", "β-barrel", "Leucine zipper", "Zinc finger"],
+                correct: 0,
+                explanation: "βαβ motif is a common supersecondary structure where a helix connects two parallel strands."
+            },
+            {
+                question: "In protein folding, the hydrophobic effect drives:",
+                options: ["Burial of nonpolar side chains in the interior", "Formation of disulfide bonds", "Ion pair formation", "Hydrogen bonding with water"],
+                correct: 0,
+                explanation: "Hydrophobic collapse buries nonpolar residues away from water, stabilizing tertiary structure."
+            },
+            {
+                question: "Chaperonins like GroEL/GroES assist in:",
+                options: ["Protein folding", "Protein degradation", "Protein synthesis", "Protein secretion"],
+                correct: 0,
+                explanation: "Chaperonins provide a protected environment for proper protein folding."
+            },
+            {
+                question: "Which disease is associated with misfolded proteins forming amyloid fibrils?",
+                options: ["Alzheimer's disease", "Diabetes", "Cancer", "Hypertension"],
+                correct: 0,
+                explanation: "Alzheimer's, Parkinson's, and prion diseases involve protein misfolding and aggregation."
+            },
+            {
+                question: "The peptide bond has partial double-bond character due to:",
+                options: ["Resonance", "Hydrogen bonding", "Ionic interactions", "Van der Waals forces"],
+                correct: 0,
+                explanation: "Resonance between carbonyl and amide nitrogen gives the peptide bond partial double-bond character, making it planar and rigid."
+            },
+            {
+                question: "Which of the following is NOT a factor stabilizing protein tertiary structure?",
+                options: ["Peptide bonds", "Hydrophobic interactions", "Hydrogen bonds", "Ionic interactions"],
+                correct: 0,
+                explanation: "Peptide bonds are part of primary structure; tertiary structure is stabilized by non-covalent interactions and disulfide bonds."
+            },
+            {
+                question: "The isoelectric point (pI) of a protein is the pH at which:",
+                options: ["Net charge is zero", "Protein is most soluble", "Protein denatures", "Electrophoretic mobility is maximal"],
+                correct: 0,
+                explanation: "At pI, protein has no net charge and minimal solubility."
+            },
+            {
+                question: "Edman degradation is used to determine:",
+                options: ["N-terminal amino acid sequence", "C-terminal sequence", "Total amino acid composition", "Three-dimensional structure"],
+                correct: 0,
+                explanation: "Edman degradation sequentially removes N-terminal amino acids for sequencing."
+            },
+            {
+                question: "X-ray crystallography reveals protein structure at:",
+                options: ["Atomic resolution", "Secondary structure only", "Primary structure only", "Quaternary contacts only"],
+                correct: 0,
+                explanation: "X-ray crystallography provides high-resolution 3D structures of proteins."
+            },
+            {
+                question: "In the β-turn, which amino acid is frequently found?",
+                options: ["Glycine", "Proline", "Both", "Alanine"],
+                correct: 2,
+                explanation: "Glycine's flexibility and proline's conformation favor β-turn formation."
+            },
+            {
+                question: "The coiled-coil structure is stabilized by:",
+                options: ["Hydrophobic interactions between α-helices", "Disulfide bonds", "Salt bridges", "Hydrogen bonds"],
+                correct: 0,
+                explanation: "Coiled-coils have hydrophobic residues at helix interfaces, driving association."
+            },
+            {
+                question: "Protein domains are:",
+                options: ["Independent folding units within a polypeptide", "Secondary structure elements", "Individual amino acids", "Quaternary subunits"],
+                correct: 0,
+                explanation: "Domains are compact, stable regions that can fold independently."
+            },
+            {
+                question: "Which technique uses NMR to determine protein structure in solution?",
+                options: ["Nuclear magnetic resonance spectroscopy", "X-ray crystallography", "Cryo-EM", "Mass spectrometry"],
+                correct: 0,
+                explanation: "NMR can solve structures of small proteins in solution by measuring distance constraints."
+            },
+            // Carbohydrates (51-80)
+            {
+                question: "Monosaccharides are characterized by having:",
+                options: ["Aldehyde or ketone group with multiple hydroxyls", "Carboxyl group", "Amino group", "Sulfate group"],
+                correct: 0,
+                explanation: "Monosaccharides are polyhydroxy aldehydes (aldoses) or ketones (ketoses)."
+            },
+            {
+                question: "Glucose and galactose are:",
+                options: ["Epimers", "Anomers", "Enantiomers", "Isomers"],
+                correct: 0,
+                explanation: "Glucose and galactose differ at C4, making them epimers."
+            },
+            {
+                question: "The glycosidic bond in sucrose connects:",
+                options: ["Glucose α1-2 fructose", "Glucose α1-4 glucose", "Glucose β1-4 galactose", "Glucose α1-6 glucose"],
+                correct: 0,
+                explanation: "Sucrose is α-D-glucopyranosyl-(1→2)-β-D-fructofuranoside."
+            },
+            {
+                question: "Starch is a polymer of:",
+                options: ["Glucose", "Fructose", "Galactose", "Mannose"],
+                correct: 0,
+                explanation: "Starch consists of amylose (α1-4 linked glucose) and amylopectin (α1-4 and α1-6)."
+            },
+            {
+                question: "Glycogen differs from amylopectin in that it:",
+                options: ["Has more frequent α1-6 branches", "Has fewer branches", "Is composed of fructose", "Is linear"],
+                correct: 0,
+                explanation: "Glycogen is highly branched (every 8-12 residues) compared to amylopectin (every 25-30)."
+            },
+            {
+                question: "Cellulose is a polysaccharide with:",
+                options: ["β1-4 linked glucose", "α1-4 linked glucose", "β1-4 linked galactose", "α1-6 linked glucose"],
+                correct: 0,
+                explanation: "Cellulose has β1-4 glycosidic bonds, making it indigestible by humans."
+            },
+            {
+                question: "The reducing end of a sugar is the:",
+                options: ["Anomeric carbon that can open to aldehyde", "Non-anomeric carbon", "Carbon with hydroxyl", "Carbon in glycosidic bond"],
+                correct: 0,
+                explanation: "The anomeric carbon (C1 in aldoses) can reduce oxidizing agents when free."
+            },
+            {
+                question: "Which test is used to detect reducing sugars?",
+                options: ["Benedict's test", "Biuret test", "Ninhydrin test", "Millon's test"],
+                correct: 0,
+                explanation: "Benedict's reagent (copper sulfate) is reduced by free carbonyl groups, forming a colored precipitate."
+            },
+            {
+                question: "The conversion of glucose to glucose-6-phosphate in glycolysis is catalyzed by:",
+                options: ["Hexokinase", "Glucokinase", "Both", "Phosphofructokinase"],
+                correct: 2,
+                explanation: "Hexokinase (most tissues) and glucokinase (liver, pancreas) phosphorylate glucose."
+            },
+            {
+                question: "Glycolysis occurs in which part of the cell?",
+                options: ["Cytoplasm", "Mitochondria", "Nucleus", "Endoplasmic reticulum"],
+                correct: 0,
+                explanation: "Glycolysis takes place in the cytoplasm."
+            },
+            {
+                question: "The net ATP yield from glycolysis of one glucose molecule is:",
+                options: ["2 ATP", "4 ATP", "36 ATP", "38 ATP"],
+                correct: 0,
+                explanation: "Glycolysis produces 2 ATP net (2 used, 4 produced)."
+            },
+            {
+                question: "Which enzyme catalyzes the committed step of glycolysis?",
+                options: ["Phosphofructokinase-1", "Hexokinase", "Pyruvate kinase", "Aldolase"],
+                correct: 0,
+                explanation: "PFK-1 catalyzes the irreversible conversion of fructose-6-phosphate to fructose-1,6-bisphosphate."
+            },
+            {
+                question: "In gluconeogenesis, pyruvate is converted to oxaloacetate by:",
+                options: ["Pyruvate carboxylase", "PEP carboxykinase", "Malate dehydrogenase", "Pyruvate kinase"],
+                correct: 0,
+                explanation: "Pyruvate carboxylase (biotin-dependent) converts pyruvate to oxaloacetate in mitochondria."
+            },
+            {
+                question: "The pentose phosphate pathway generates:",
+                options: ["NADPH and ribose-5-phosphate", "NADH and ATP", "FADH2", "GTP"],
+                correct: 0,
+                explanation: "PPP produces NADPH for reductive biosynthesis and ribose for nucleotide synthesis."
+            },
+            {
+                question: "Glycogenolysis is the breakdown of glycogen to:",
+                options: ["Glucose-1-phosphate", "Glucose", "Glucose-6-phosphate", "UDP-glucose"],
+                correct: 0,
+                explanation: "Glycogen phosphorylase releases glucose-1-phosphate from glycogen."
+            },
+            {
+                question: "Which hormone promotes glycogen synthesis?",
+                options: ["Insulin", "Glucagon", "Epinephrine", "Cortisol"],
+                correct: 0,
+                explanation: "Insulin stimulates glycogen synthase, promoting glycogen storage."
+            },
+            {
+                question: "The Cori cycle involves:",
+                options: ["Conversion of lactate to glucose in liver", "Conversion of glucose to lactate in muscle", "Both", "Fatty acid synthesis"],
+                correct: 2,
+                explanation: "Lactate from muscle is converted to glucose in the liver via gluconeogenesis."
+            },
+            {
+                question: "Which disaccharide is composed of glucose and galactose?",
+                options: ["Lactose", "Sucrose", "Maltose", "Trehalose"],
+                correct: 0,
+                explanation: "Lactose (milk sugar) is galactose β1-4 glucose."
+            },
+            {
+                question: "Sucrose is hydrolyzed by the enzyme:",
+                options: ["Sucrase", "Lactase", "Maltase", "Amylase"],
+                correct: 0,
+                explanation: "Sucrase breaks sucrose into glucose and fructose."
+            },
+            {
+                question: "Glycoprotein oligosaccharides are often linked to proteins via:",
+                options: ["N-link (asparagine) or O-link (serine/threonine)", "Only N-link", "Only O-link", "Peptide bonds"],
+                correct: 0,
+                explanation: "Glycoproteins have N-linked (to Asn) or O-linked (to Ser/Thr) glycans."
+            },
+            {
+                question: "Proteoglycans contain glycosaminoglycans attached to a core protein. Which of the following is a glycosaminoglycan?",
+                options: ["Hyaluronic acid", "Chondroitin sulfate", "Heparan sulfate", "All of the above"],
+                correct: 3,
+                explanation: "GAGs include hyaluronic acid, chondroitin sulfate, heparan sulfate, and keratan sulfate."
+            },
+            {
+                question: "The anomeric carbon in a cyclic sugar is the carbon that was:",
+                options: ["The carbonyl carbon in the open chain", "The most oxidized", "The primary alcohol", "The chiral center"],
+                correct: 0,
+                explanation: "The anomeric carbon (C1 in aldoses) is the former carbonyl carbon, becoming a new chiral center upon cyclization."
+            },
+            {
+                question: "α and β anomers differ in the configuration at:",
+                options: ["Anomeric carbon", "C2", "C3", "C4"],
+                correct: 0,
+                explanation: "Anomers differ in the position of the hydroxyl at the anomeric carbon (axial vs equatorial)."
+            },
+            {
+                question: "Mutarotation refers to:",
+                options: ["Interconversion of α and β anomers in solution", "Change in optical rotation", "Both", "Oxidation of sugars"],
+                correct: 2,
+                explanation: "Mutarotation is the change in optical rotation due to anomeric equilibration."
+            },
+            {
+                question: "Which sugar is the main component of human milk oligosaccharides?",
+                options: ["Lactose", "Glucose", "Galactose", "Fucose"],
+                correct: 0,
+                explanation: "Lactose is the primary carbohydrate in milk; oligosaccharides contain various sugars."
+            },
+            {
+                question: "The blood group antigens (ABO) are determined by:",
+                options: ["Specific glycosyltransferases adding sugars to glycolipids/glycoproteins", "Protein sequence", "Lipid composition", "Nucleotide sequence"],
+                correct: 0,
+                explanation: "ABO antigens differ in terminal sugars added by glycosyltransferases."
+            },
+            {
+                question: "In the Maillard reaction, reducing sugars react with:",
+                options: ["Amino groups (proteins)", "Lipids", "Nucleic acids", "Water"],
+                correct: 0,
+                explanation: "Maillard reaction between sugars and amino groups causes browning and flavor compounds."
+            },
+            {
+                question: "The enzyme amylase hydrolyzes:",
+                options: ["α1-4 glycosidic bonds in starch", "β1-4 bonds in cellulose", "Peptide bonds", "Ester bonds"],
+                correct: 0,
+                explanation: "Amylase breaks down starch into maltose and glucose."
+            },
+            {
+                question: "Which of the following is a ketose sugar?",
+                options: ["Fructose", "Glucose", "Galactose", "Mannose"],
+                correct: 0,
+                explanation: "Fructose is a ketohexose; the others are aldoses."
+            },
+            {
+                question: "Sugar alcohols (e.g., sorbitol) are produced by:",
+                options: ["Reduction of aldoses", "Oxidation of aldoses", "Dehydration", "Isomerization"],
+                correct: 0,
+                explanation: "Reduction of carbonyl group yields sugar alcohols (alditols)."
+            },
+            // Effects of Acid and Alkali on Nucleic Acids (81-100)
+            {
+                question: "When DNA is treated with strong acid, what happens to the purine bases?",
+                options: ["They are released (depurination)", "They remain intact", "They form crosslinks", "They are converted to pyrimidines"],
+                correct: 0,
+                explanation: "Acid hydrolyzes the glycosidic bond of purines, causing depurination."
+            },
+            {
+                question: "Depurination occurs more readily with:",
+                options: ["Purines than pyrimidines", "Pyrimidines than purines", "Both equally", "Neither"],
+                correct: 0,
+                explanation: "Purine N-glycosidic bonds are more acid-labile than pyrimidines."
+            },
+            {
+                question: "Alkali treatment of RNA causes:",
+                options: ["Hydrolysis of phosphodiester bonds via 2'-OH", "Denaturation only", "Depurination", "No effect"],
+                correct: 0,
+                explanation: "RNA is susceptible to alkaline hydrolysis because the 2'-OH attacks the phosphodiester bond, forming 2',3'-cyclic phosphate."
+            },
+            {
+                question: "Why is DNA resistant to alkaline hydrolysis?",
+                options: ["It lacks 2'-OH", "It has thymine instead of uracil", "It is double-stranded", "It has deoxyribose"],
+                correct: 0,
+                explanation: "DNA lacks the 2'-hydroxyl group needed for intramolecular attack under alkaline conditions."
+            },
+            {
+                question: "The action of strong acid on DNA at elevated temperature leads to:",
+                options: ["Complete hydrolysis to bases, sugars, and phosphate", "Only denaturation", "Only depurination", "Formation of thymine dimers"],
+                correct: 0,
+                explanation: "Strong acid and heat hydrolyze all glycosidic bonds and phosphodiester bonds, yielding components."
+            },
+            {
+                question: "The Feulgen reaction, used to detect DNA, involves:",
+                options: ["Acid hydrolysis to release purines, then Schiff's reagent reacts with aldehyde of deoxyribose", "Alkaline hydrolysis", "Enzymatic digestion", "Fluorescence"],
+                correct: 0,
+                explanation: "Acid depurination exposes aldehyde groups of deoxyribose, which react with Schiff's reagent (pink color)."
+            },
+            {
+                question: "Ultraviolet light can cause formation of:",
+                options: ["Thymine dimers", "Depurination", "Deamination", "Strand breaks"],
+                correct: 0,
+                explanation: "UV light induces covalent bonds between adjacent pyrimidines, especially thymine dimers."
+            },
+            {
+                question: "Deamination of cytosine by nitrous acid or heat produces:",
+                options: ["Uracil", "Thymine", "Hypoxanthine", "Xanthine"],
+                correct: 0,
+                explanation: "Deamination of cytosine yields uracil, which is mutagenic if not repaired."
+            },
+            {
+                question: "Alkylating agents like dimethyl sulfate modify DNA by:",
+                options: ["Adding methyl groups to bases", "Crosslinking strands", "Breaking phosphodiester bonds", "Oxidizing bases"],
+                correct: 0,
+                explanation: "Alkylating agents add alkyl groups to purines (e.g., 7-methylguanine), causing mispairing."
+            },
+            {
+                question: "The Tm (melting temperature) of DNA is the temperature at which:",
+                options: ["Half of the DNA is denatured", "All DNA is denatured", "DNA renatures", "DNA polymerizes"],
+                correct: 0,
+                explanation: "Tm is the midpoint of the thermal denaturation curve where 50% of DNA is single-stranded."
+            },
+            {
+                question: "High pH (alkaline conditions) causes DNA to:",
+                options: ["Denature (strand separation)", "Hydrolyze", "Depurinate", "Form crosslinks"],
+                correct: 0,
+                explanation: "Alkaline pH disrupts hydrogen bonds, causing denaturation without phosphodiester cleavage (since DNA lacks 2'-OH)."
+            },
+            {
+                question: "The hyperchromic effect refers to:",
+                options: ["Increased UV absorbance at 260 nm upon denaturation", "Decreased absorbance upon denaturation", "Increased absorbance at 280 nm", "Fluorescence increase"],
+                correct: 0,
+                explanation: "DNA denaturation increases UV absorbance (hyperchromicity) due to unstacking of bases."
+            },
+            {
+                question: "Which bond is hydrolyzed by DNase I?",
+                options: ["Phosphodiester bonds", "Glycosidic bonds", "Hydrogen bonds", "Peptide bonds"],
+                correct: 0,
+                explanation: "DNases are nucleases that cleave phosphodiester bonds in DNA."
+            },
+            {
+                question: "In the laboratory, phenol-chloroform extraction is used to:",
+                options: ["Remove proteins from nucleic acid solutions", "Precipitate DNA", "Denature DNA", "Hydrolyze RNA"],
+                correct: 0,
+                explanation: "Phenol-chloroform denatures proteins and partitions them into the organic phase, leaving nucleic acids in aqueous phase."
+            },
+            {
+                question: "Ethanol precipitation of nucleic acids requires:",
+                options: ["Monovalent cations (e.g., Na+)", "Divalent cations", "Detergents", "Heat"],
+                correct: 0,
+                explanation: "Salt (Na+ or NH4+) neutralizes the phosphate charge, allowing DNA to precipitate in ethanol."
+            },
+            {
+                question: "The ratio A260/A280 is used to assess:",
+                options: ["Purity of nucleic acids (protein contamination)", "Concentration", "Length", "Sequence"],
+                correct: 0,
+                explanation: "A260/A280 ~1.8 for pure DNA, ~2.0 for pure RNA; lower ratios indicate protein contamination."
+            },
+            {
+                question: "Formamide is used in nucleic acid hybridization to:",
+                options: ["Lower the melting temperature (Tm)", "Increase Tm", "Denature proteins", "Precipitate DNA"],
+                correct: 0,
+                explanation: "Formamide destabilizes hydrogen bonds, allowing hybridization at lower temperatures."
+            },
+            {
+                question: "In the Maxam-Gilbert sequencing method, chemical cleavage at specific bases involves:",
+                options: ["Dimethyl sulfate (G), hydrazine (C/T), etc.", "Dideoxynucleotides", "DNA polymerase", "Fluorescent labels"],
+                correct: 0,
+                explanation: "Maxam-Gilbert uses base-specific chemical reactions to cleave DNA at particular residues."
+            },
+            {
+                question: "The Sanger sequencing method uses:",
+                options: ["Dideoxynucleotides (ddNTPs) to terminate chain elongation", "Chemical cleavage", "Mass spectrometry", "Hybridization"],
+                correct: 0,
+                explanation: "Sanger sequencing incorporates ddNTPs that lack 3'-OH, causing chain termination."
+            },
+            {
+                question: "Alkaline agarose gel electrophoresis is used to:",
+                options: ["Separate single-stranded DNA under denaturing conditions", "Separate native DNA", "Separate RNA", "Separate proteins"],
+                correct: 0,
+                explanation: "Alkaline conditions denature DNA, allowing separation of single strands by size."
+            }
+        ];
+
+        console.log('Total questions:', quizData.length); // Should be 100
+
+        // Function to shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize the quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsSection = document.getElementById('questions-section');
+            const answerSection = document.getElementById('answer-section');
+            const answerBank = document.getElementById('answer-bank');
+            const submitBtn = document.getElementById('submit-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const resultsSection = document.getElementById('results-section');
+            const scoreValue = document.getElementById('score-value');
+            const attemptedValue = document.getElementById('attempted-value');
+            const passedValue = document.getElementById('passed-value');
+            const failedValue = document.getElementById('failed-value');
+            const detailedAnswers = document.getElementById('detailed-answers');
+            const progressBar = document.getElementById('progress-bar');
+            
+            let userAnswers = Array(quizData.length).fill(null);
+            
+            // Create question elements with shuffled answer options
+            quizData.forEach((questionData, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                
+                // Shuffle the options but remember correct answer position
+                const optionsWithIndices = questionData.options.map((option, i) => ({ option, originalIndex: i }));
+                const shuffledOptions = shuffleArray([...optionsWithIndices]);
+                const correctAnswerNewIndex = shuffledOptions.findIndex(item => item.originalIndex === questionData.correct);
+                
+                // Store the new correct index in the question data
+                questionData.shuffledCorrect = correctAnswerNewIndex;
+                
+                // Determine which note type to add based on question content
+                let noteType = 'protein-note'; // default
+                const qText = questionData.question.toLowerCase();
+                if (qText.includes('protein') || qText.includes('purification') || qText.includes('chromatography') || qText.includes('electrophoresis') || qText.includes('folding') || qText.includes('structure') || qText.includes('primary') || qText.includes('secondary') || qText.includes('tertiary') || qText.includes('quaternary')) {
+                    noteType = 'protein-note';
+                } else if (qText.includes('glucose') || qText.includes('sugar') || qText.includes('starch') || qText.includes('glycogen') || qText.includes('glycolysis') || qText.includes('carbohydrate')) {
+                    noteType = 'carb-note';
+                } else if (qText.includes('dna') || qText.includes('rna') || qText.includes('nucleic') || qText.includes('acid') || qText.includes('alkali') || qText.includes('depurination') || qText.includes('denaturation')) {
+                    noteType = 'nucleic-note';
+                } else {
+                    noteType = 'protein-note';
+                }
+                
+                const categoryNote = `<div class="${noteType}">Topic Focus: This question covers ${noteType.replace('-note','')} biochemistry.</div>`;
+                
+                questionElement.innerHTML = `
+                    <div class="question-number">${index + 1}</div>
+                    <div class="question-text">${questionData.question}</div>
+                    ${categoryNote}
+                    <div class="options">
+                        ${shuffledOptions.map((item, optionIndex) => `
+                            <div class="option" data-question="${index}" data-option="${optionIndex}" data-original="${item.originalIndex}" data-letter="${String.fromCharCode(65 + optionIndex)}">
+                                <div class="option-content">${item.option}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                questionsSection.appendChild(questionElement);
+                
+                // Create answer element for answer bank
+                const answerElement = document.createElement('div');
+                answerElement.className = 'answer-item';
+                answerElement.innerHTML = `
+                    <strong>${index + 1}. ${questionData.question}</strong><br>
+                    <span class="answer-correct">Correct: ${String.fromCharCode(65 + questionData.correct)}. ${questionData.options[questionData.correct]}</span>
+                `;
+                answerBank.appendChild(answerElement);
+            });
+            
+            // Update progress bar
+            function updateProgress() {
+                const answered = userAnswers.filter(answer => answer !== null).length;
+                const progress = (answered / quizData.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Add event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    const optionIndex = parseInt(this.getAttribute('data-option'));
+                    
+                    // Remove selected class from all options in this question
+                    const questionOptions = document.querySelectorAll(`.option[data-question="${questionIndex}"]`);
+                    questionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store user's answer
+                    userAnswers[questionIndex] = optionIndex;
+                    
+                    // Update progress
+                    updateProgress();
+                });
+            });
+            
+            // Submit button event listener
+            submitBtn.addEventListener('click', function() {
+                let score = 0;
+                let attempted = 0;
+                let passed = 0;
+                let failed = 0;
+                
+                // Clear previous detailed answers
+                detailedAnswers.innerHTML = '';
+                
+                // Evaluate answers
+                quizData.forEach((questionData, index) => {
+                    const userAnswer = userAnswers[index];
+                    const correctAnswer = questionData.shuffledCorrect;
+                    const questionOptions = document.querySelectorAll(`.option[data-question="${index}"]`);
+                    
+                    if (userAnswer !== null) {
+                        attempted++;
+                        
+                        // Mark correct/incorrect answers
+                        questionOptions.forEach((option, optionIndex) => {
+                            if (optionIndex === correctAnswer) {
+                                option.classList.add('correct');
+                            } else if (optionIndex === userAnswer && userAnswer !== correctAnswer) {
+                                option.classList.add('incorrect');
+                            }
+                        });
+                        
+                        if (userAnswer === correctAnswer) {
+                            score++;
+                            passed++;
+                        } else {
+                            failed++;
+                        }
+                        
+                        // Get the original letter for the user's answer
+                        const userOptionElement = document.querySelector(`.option[data-question="${index}"][data-option="${userAnswer}"]`);
+                        const userOriginalIndex = userOptionElement ? parseInt(userOptionElement.getAttribute('data-original')) : null;
+                        const userAnswerLetter = userOriginalIndex !== null ? String.fromCharCode(65 + userOriginalIndex) : '?';
+                        const userAnswerText = userOptionElement ? userOptionElement.querySelector('.option-content').textContent : 'Not selected';
+                        
+                        // Create detailed answer element
+                        const detailedAnswer = document.createElement('div');
+                        detailedAnswer.className = 'answer-item';
+                        const userAnswerClass = userAnswer === correctAnswer ? 'answer-correct' : 'answer-incorrect';
+                        detailedAnswer.innerHTML = `
+                            <strong>${index + 1}. ${questionData.question}</strong><br>
+                            <span class="${userAnswerClass}">Your answer: ${userAnswerLetter}. ${userAnswerText}</span><br>
+                            <span class="answer-correct">Correct: ${String.fromCharCode(65 + questionData.correct)}. ${questionData.options[questionData.correct]}</span><br>
+                            <div class="protein-note">${questionData.explanation}</div>
+                        `;
+                        detailedAnswers.appendChild(detailedAnswer);
+                    } else {
+                        // Create detailed answer for unattempted question
+                        const detailedAnswer = document.createElement('div');
+                        detailedAnswer.className = 'answer-item';
+                        detailedAnswer.innerHTML = `
+                            <strong>${index + 1}. ${questionData.question}</strong><br>
+                            <span class="answer-incorrect">Your answer: Not attempted</span><br>
+                            <span class="answer-correct">Correct: ${String.fromCharCode(65 + questionData.correct)}. ${questionData.options[questionData.correct]}</span><br>
+                            <div class="protein-note">${questionData.explanation}</div>
+                        `;
+                        detailedAnswers.appendChild(detailedAnswer);
+                    }
+                });
+                
+                // Update score and stats
+                scoreValue.textContent = `${score}/${quizData.length}`;
+                attemptedValue.textContent = attempted;
+                passedValue.textContent = passed;
+                failedValue.textContent = failed;
+                
+                // Show results section and answer section
+                resultsSection.style.display = 'block';
+                answerSection.classList.add('visible');
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Reset button event listener
+            resetBtn.addEventListener('click', function() {
+                userAnswers = Array(quizData.length).fill(null);
+                
+                // Clear all selections
+                document.querySelectorAll('.option').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'incorrect');
+                });
+                
+                // Hide results section and answer section
+                resultsSection.style.display = 'none';
+                answerSection.classList.remove('visible');
+                
+                // Reset progress bar
+                progressBar.style.width = '0%';
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
